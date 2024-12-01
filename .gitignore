@@ -1,0 +1,4 @@
+/.gradle/
+/.idea/
+/cacerts_nexus
+/local.properties
