@@ -2,7 +2,7 @@ package com.example.solutions
 
 import com.example.ILogger
 
-class DaySolutionTemplate(private val logger: ILogger) : DaySolution {
+class DaySolution3(private val logger: ILogger) : DaySolution {
 
     override val part1 = object : DaySolutionPart {
         private var intRes: Int = 0
