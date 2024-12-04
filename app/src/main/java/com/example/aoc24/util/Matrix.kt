@@ -201,6 +201,71 @@ class Matrix<T>() : Iterable<PositionData<T>> {
     fun clear(){
         data.clear()
     }
+
+    fun onEachDiagonal(action: (List<T>) -> Unit) {
+
+        //get diagonals
+        var i = 0
+        var j = 0
+        println("----D1----")
+        val sum = xSize + ySize - 1
+        var last = false
+        while (!last) {
+            val diagonal = buildList {
+                var k = 0
+                var p = i
+
+                while (k <= j) {
+                    val point1 = Point2D(k, p)
+                    if (pointInRange(point1)) {
+                        add(get(point1))
+                    }
+                    k++
+                    p--
+                }
+            }
+            if (i == sum && j == sum) last = true
+            if (i < sum) {
+                i++
+            }
+            if (j < sum) {
+                j++
+            }
+            if (diagonal.isNotEmpty()) {
+                action(diagonal)
+            }
+        }
+
+        println("----D2----")
+        i = 0
+        j = -ySize
+        last = false
+        while (!last) {
+            val diagonal = buildList {
+                var k = 0
+                var p = j
+
+                while (k <= j) {
+                    val point1 = Point2D(k, xSize - 1 - p)
+                    if (pointInRange(point1)) {
+                        add(get(point1))
+                    }
+                    k++
+                    p--
+                }
+            }
+            if (i == sum && j == sum) last = true
+            if (i < sum) {
+                i++
+            }
+            if (j < sum) {
+                j++
+            }
+            if (diagonal.isNotEmpty()) {
+                action(diagonal)
+            }
+        }
+    }
 }
 
 data class PositionData<T>(val pos:Point2D, val data:T)
