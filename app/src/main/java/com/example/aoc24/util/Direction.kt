@@ -84,7 +84,7 @@ fun Char.symbolToDir(): Direction =
         else -> throw IllegalArgumentException("bad symbol $this")
     }
 
-fun Direction.toRight(): Direction =
+fun Direction.toLeft(): Direction =
     when (this) {
         Direction.UP -> Direction.LEFT
         Direction.LEFT -> Direction.DOWN
@@ -92,4 +92,4 @@ fun Direction.toRight(): Direction =
         Direction.DOWN -> Direction.RIGHT
     }
 
-fun Direction.toLeft(): Direction = this.toRight().opposite
+fun Direction.toRight(): Direction = this.toLeft().opposite
