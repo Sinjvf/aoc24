@@ -10,48 +10,30 @@ class DaySolution7Test {
 
     @Test
     fun testPart1() = runTest {
-        input5.forEachIndexed { id, str -> solution.part1.handleLine(str, id) }
+        input.forEachIndexed { id, str -> solution.part1.handleLine(str, id) }
         solution.part1.finish()
-        assertEquals(result, solution.part1.obtainResult())
+        assertEquals(result1, solution.part1.obtainResult())
     }
 
     @Test
     fun testPart2() = runTest {
-        input5.forEachIndexed { id, str -> solution.part2.handleLine(str, id) }
+        input.forEachIndexed { id, str -> solution.part2.handleLine(str, id) }
         solution.part2.finish()
-        assertEquals(result, solution.part2.obtainResult())
+        assertEquals(result2, solution.part2.obtainResult())
     }
 
-    private val input = """47|53
-97|13
-97|61
-97|47
-75|29
-61|13
-75|53
-29|13
-97|29
-53|29
-61|53
-97|53
-61|29
-47|13
-75|47
-97|75
-47|61
-75|61
-47|29
-75|13
-53|13
-
-75,47,61,53,29
-97,61,53,29,13
-75,29,13
-75,97,47,61,53
-61,13,29
-97,13,75,29,47""".trimMargin().split("\n")
+    private val input = """190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20""".trim().split("\n")
 
 
-    private val result = "11"
+    private val result1 = "3749"
 
+    private val result2 = "11387"
 }
