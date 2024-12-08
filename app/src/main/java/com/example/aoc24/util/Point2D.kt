@@ -27,6 +27,10 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
             RIGHT -> Point2D(x, y + size)
         }
 
+    fun toDirections(list: List<Pair<Int, Direction>>): Point2D =
+        list.fold(this@Point2D) { point, dir -> point.toDirection(dir.second, dir.first) }
+
+
     fun <T> inMatrix(matrix: Matrix<T>): Boolean =
         (x in 0 until matrix.ySize) && (y in 0 until matrix.xSize)
 
@@ -43,5 +47,15 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
 
     fun distanceTo(p:Point2D):Int =
         abs(p.x-x) +abs(p.y-y)
+
+    fun vectorTo(p: Point2D):List< Pair< Int,Direction>> {
+        val list = mutableListOf<Pair< Int,Direction>>()
+        val xDiff = p.x - x
+        val yDiff = p.y - y
+        if (xDiff> 0) list.add(abs(xDiff) to DOWN) else if (xDiff<0) list.add(abs(xDiff)  to UP)
+        if (yDiff > 0) list.add(abs(yDiff) to RIGHT) else if (yDiff<0) list.add(abs(yDiff) to LEFT)
+   //     println(list)
+        return list
+    }
 }
 
