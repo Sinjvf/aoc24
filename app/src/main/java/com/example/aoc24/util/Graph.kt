@@ -32,7 +32,6 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
     val searchTree = mutableMapOf(startNode to (startNode to startData))
 
     while (true) {
-   //     println("q = $queue")
         val currData = queue.poll() ?: return SearchResult(startNode, null, searchTree)
         onVisited(currData)
 
@@ -42,12 +41,8 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
             searchTree
         )
 
-        next(currData)/*.map{
-            if (it.node is DaySolution23.Node && it.node.pos==Point2D(19, 9)) println(searchTree)
-            it
-        }*/
+        next(currData)
             .filter { it.node !in searchTree }
-
             .forEach { nextData ->
                 val newData = currData.data.plus(nextData.data) as Data
                 if (newData.getLong() <= (searchTree[nextData.node]?.second?.getLong() ?: Long.MAX_VALUE)) {
@@ -61,7 +56,6 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
                             currData.node,
                             nextData.node,
                             dataWithHeu,
-                  //          searchTree
                         )
                     )
                     searchTree[nextData.node] = currData.node.apply { clear(this) } to newData
@@ -136,31 +130,30 @@ open class NodesWithData<Node, Data : GraphData>(
     }
 }
 
-// возвращает все найденные пути
-/*fun <Node, Data : GraphData> Graph<Node, Data>.allPath(
+// возвращает все найденные пути(nолько количество)
+fun <Node, Data : GraphData> Graph<Node, Data>.allPath(
     startNode: Node,
     startData: Data,
-    endNode: Node,*//*
-    isFinish: (NodesWithData<Node, Data>) -> Boolean,*//*
-    onNewPath: (NodesWithData<Node, Data>) -> Unit = { _ -> }
-): List<List<Node>> {
+    endNode: Node
+): List<Node > {
     val paths = mutableListOf<List<Node>>()
     val queue = PriorityQueue(compareBy<NodesWithDataAndPath<Node, Data>> { it.data.getLong() })
     queue.add(NodesWithDataAndPath(null, startNode, startData, paths))
+    val result = mutableListOf<Node>()
 
     while (true) {
-        val nodesData = queue.poll() ?: return paths
+        val nodesData = queue.poll() ?: return result
         if (nodesData.node==endNode){
-
+            result.add(startNode)
         }
 
         next(nodesData)
             .forEach { newNData ->
                 val newData = nodesData.data.plus(newNData.data) as Data
-                queue.add(NodesWithData(nodesData.node, newNData.node, newData))
+                queue.add(NodesWithDataAndPath(nodesData.node, newNData.node, newData, listOf()))
             }
     }
-}*/
+}
 
 class NodesWithDataAndPath<Node, Data : GraphData>(
     override val prev: Node?,
