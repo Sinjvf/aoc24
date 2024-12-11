@@ -8,48 +8,23 @@ import org.junit.Test
 class DaySolution11Test {
     private val solution = DaySolution11(TestLogger())
 
+    private val BLINKING = 75
     @Test
     fun testPart1() = runTest {
-        input5.forEachIndexed { id, str -> solution.part1.handleLine(str, id) }
+        input.forEachIndexed { id, str -> solution.part1.handleLine(str, BLINKING) }
         solution.part1.finish()
         assertEquals(result, solution.part1.obtainResult())
     }
 
     @Test
     fun testPart2() = runTest {
-        input5.forEachIndexed { id, str -> solution.part2.handleLine(str, id) }
+        input2.forEachIndexed { id, str -> solution.part2.handleLine(str, BLINKING) }
         solution.part2.finish()
         assertEquals(result, solution.part2.obtainResult())
     }
+    private val input = """125 17""".trimMargin().split("\n")
 
-    private val input = """47|53
-97|13
-97|61
-97|47
-75|29
-61|13
-75|53
-29|13
-97|29
-53|29
-61|53
-97|53
-61|29
-47|13
-75|47
-97|75
-47|61
-75|61
-47|29
-75|13
-53|13
-
-75,47,61,53,29
-97,61,53,29,13
-75,29,13
-75,97,47,61,53
-61,13,29
-97,13,75,29,47""".trimMargin().split("\n")
+    private val input2 = """773 79858 0 71 213357 2937 1 3998391""".trimMargin().split("\n")
 
 
     private val result = "11"
