@@ -56,6 +56,14 @@ enum class Orientation {
     HORIZONTAL
 }
 
+fun Orientation.opposite() =
+    when (this) {
+        Orientation.VERTICAL -> Orientation.HORIZONTAL
+        Orientation.HORIZONTAL -> Orientation.VERTICAL
+    }
+
+fun Orientation.getDirs() = Direction.values().filter { it.orientation == this }
+
 data class CountedDirection(val dir: Direction, var count: Int) {
     override fun toString(): String {
         return "$count$dir"
