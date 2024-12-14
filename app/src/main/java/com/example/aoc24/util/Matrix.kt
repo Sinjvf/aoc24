@@ -184,6 +184,15 @@ class Matrix<T>() : Iterable<PositionData<T>> {
         }
     }
 
+    fun printMirrow(logger: ILogger?, separator: String = "", printString:((T)->String)? = null) {
+        for (y in 0 until xSize) {
+            val builder = StringBuilder()
+            for (x in 0 until data.size) {
+                builder.append((printString?.invoke(data[x][y]))?:data[x][y].toString()).append(separator)
+            }
+            logger?.logD(builder.toString()) ?: println(builder.toString())
+        }
+    }
     fun getCol(y: Int): List<T> = buildList {
         for (i in 0 until data.size) {
             add(data[i][y])

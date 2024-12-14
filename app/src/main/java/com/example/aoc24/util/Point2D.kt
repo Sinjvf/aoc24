@@ -19,6 +19,8 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
         return "($x, $y)"
     }
 
+    fun plus(a: Point2D) = Point2D(x + a.x, y + a.y)
+
     fun toDirection(direction: Direction, size: Int = 1): Point2D =
         when (direction) {
             UP -> Point2D(x - size, y)
