@@ -2,7 +2,7 @@ package com.example.solutions
 
 import com.example.ILogger
 import com.example.aoc24.util.Direction
-import com.example.aoc24.util.Matrix
+import com.example.aoc24.util.OldMatrix
 import com.example.aoc24.util.Point2D
 import com.example.aoc24.util.toRight
 
@@ -10,21 +10,21 @@ class DaySolution6(private val logger: ILogger) : DaySolution {
 
     override val part1 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private var matrix = Matrix<Place>()
+        private var oldMatrix = OldMatrix<Place>()
         private lateinit var current: Point2D
         private var direction: Direction = Direction.UP
 
         override fun handleLine(inputStr: String, pos: Int) {
             for (ch in inputStr) {
                 if (ch == '^') {
-                    current = matrix.getNextPoint(pos)
+                    current = oldMatrix.getNextPoint(pos)
                 }
-                matrix.addToEnd(pos, (ch.takeIf { ch != '^' } ?: '.').toPlace())
+                oldMatrix.addToEnd(pos, (ch.takeIf { ch != '^' } ?: '.').toPlace())
             }
         }
 
         override fun finish() {
-            intRes = SingleSearch(matrix, current, direction).go().size
+            intRes = SingleSearch(oldMatrix, current, direction).go().size
         }
 
         override fun obtainResult(): String = intRes.toString()
@@ -33,7 +33,7 @@ class DaySolution6(private val logger: ILogger) : DaySolution {
 
     override val part2 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private var matrix = Matrix<Place>()
+        private var oldMatrix = OldMatrix<Place>()
         private lateinit var current: Point2D
         private var direction: Direction = Direction.UP
         private val approved = mutableSetOf<Point2D>()
@@ -42,16 +42,16 @@ class DaySolution6(private val logger: ILogger) : DaySolution {
         override fun handleLine(inputStr: String, pos: Int) {
             for (ch in inputStr) {
                 if (ch == '^') {
-                    current = matrix.getNextPoint(pos)
+                    current = oldMatrix.getNextPoint(pos)
                     start = current
                 }
-                matrix.addToEnd(pos, (ch.takeIf { ch != '^' } ?: '.').toPlace())
+                oldMatrix.addToEnd(pos, (ch.takeIf { ch != '^' } ?: '.').toPlace())
             }
         }
 
         override fun finish() {
-            SingleSearch(matrix, current, direction).go().forEach {
-                val check = LoopCheck(matrix, start, Direction.UP, it)
+            SingleSearch(oldMatrix, current, direction).go().forEach {
+                val check = LoopCheck(oldMatrix, start, Direction.UP, it)
                 if (check.isInLoop()) {
                     approved.add(it)
                 }
@@ -62,9 +62,9 @@ class DaySolution6(private val logger: ILogger) : DaySolution {
     }
 }
 
-private fun next(matrix: Matrix<Place>, current: Point2D, direction: Direction): Point2D? {
-    val nextP = current.toDirection(direction)
-    return if (matrix.pointInRange(nextP))
+private fun next(oldMatrix: OldMatrix<Place>, current: Point2D, direction: Direction): Point2D? {
+    val nextP = current.toOldDirection(direction)
+    return if (oldMatrix.pointInRange(nextP))
         nextP/*.also { println( "next" + it) }*/
     else
         null
@@ -91,7 +91,7 @@ fun Char.toPlace(): Place =
     }
 
 class SingleSearch(
-    val matrix: Matrix<Place>,
+    val oldMatrix: OldMatrix<Place>,
     val _current: Point2D,
     val _direction: Direction,
 ) {
@@ -111,8 +111,8 @@ class SingleSearch(
 
     private fun goForward(): Point2D? {
         while (true) {
-            val next: Point2D = next(matrix, current, direction) ?: return null
-            val nextPlace = matrix.get(next)
+            val next: Point2D = next(oldMatrix, current, direction) ?: return null
+            val nextPlace = oldMatrix.get(next)
             if (nextPlace == Place.Obstr) {
                 direction = direction.toRight()
 
@@ -127,7 +127,7 @@ class SingleSearch(
 }
 
 class LoopCheck(
-    val matrix: Matrix<Place>,
+    val oldMatrix: OldMatrix<Place>,
     val _current: Point2D,
     val _direction: Direction,
     val changed: Point2D,
@@ -153,11 +153,11 @@ class LoopCheck(
     ): Pair<Point2D?, Boolean> {
         while (true) {
 
-            val next: Point2D = next(matrix, current, direction) ?: return null to false
+            val next: Point2D = next(oldMatrix, current, direction) ?: return null to false
             val nextPlace = if (next == changed) {
                 Place.Obstr
             } else {
-                matrix.get(next)
+                oldMatrix.get(next)
             }
             if (nextPlace == Place.Obstr) {
                 direction = direction.toRight()

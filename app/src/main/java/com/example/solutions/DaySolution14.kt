@@ -1,7 +1,7 @@
 package com.example.solutions
 
 import com.example.ILogger
-import com.example.aoc24.util.Matrix
+import com.example.aoc24.util.OldMatrix
 import com.example.aoc24.util.Point2D
 
 class DaySolution14(private val logger: ILogger) : DaySolution {
@@ -10,7 +10,7 @@ class DaySolution14(private val logger: ILogger) : DaySolution {
         private var intRes: Int = 0
         private val robots = mutableListOf<Robot>()
 
-        private val matrix = Matrix(101, 103, ".")
+        private val oldMatrix = OldMatrix(101, 103, ".")
 
         // private val matrix = Matrix(11, 7, ".")
         private val sec = 100
@@ -54,36 +54,36 @@ class DaySolution14(private val logger: ILogger) : DaySolution {
 
         private fun singleMove(rob: Robot): Robot {
             var pos = rob.pos.plus(rob.vel)
-            if (!pos.inMatrix(matrix)) {
-                pos = Point2D((pos.x + matrix.ySize) % matrix.ySize, (pos.y + matrix.xSize) % matrix.xSize)
+            if (!pos.inMatrix(oldMatrix)) {
+                pos = Point2D((pos.x + oldMatrix.ySize) % oldMatrix.ySize, (pos.y + oldMatrix.xSize) % oldMatrix.xSize)
             }
 
             return Robot(pos = pos, vel = rob.vel)
         }
 
         fun toMatrix() {
-            val matrix1 = Matrix(matrix.ySize, matrix.xSize, ".")
+            val oldMatrix1 = OldMatrix(oldMatrix.ySize, oldMatrix.xSize, ".")
             robots
                 .map {
-                    if (matrix1.get(it.pos) == ".") {
-                        matrix1.put(it.pos, "1")
+                    if (oldMatrix1.get(it.pos) == ".") {
+                        oldMatrix1.put(it.pos, "1")
                     } else {
-                        val num = matrix1.get(it.pos).toInt()
-                        matrix1.put(it.pos, (num + 1).toString())
+                        val num = oldMatrix1.get(it.pos).toInt()
+                        oldMatrix1.put(it.pos, (num + 1).toString())
                     }
                     it
                 }
-            matrix1.print(logger = logger)
+            oldMatrix1.print(logger = logger)
         }
 
         override fun obtainResult(): String = intRes.toString()
 
         private fun Point2D.toQuad(): Int {
             return when {
-                (x < matrix.ySize / 2 && y < matrix.xSize / 2) -> 1
-                (x > matrix.ySize / 2 && y < matrix.xSize / 2) -> 2
-                (x < matrix.ySize / 2 && y > matrix.xSize / 2) -> 3
-                (x > matrix.ySize / 2 && y > matrix.xSize / 2) -> 4
+                (x < oldMatrix.ySize / 2 && y < oldMatrix.xSize / 2) -> 1
+                (x > oldMatrix.ySize / 2 && y < oldMatrix.xSize / 2) -> 2
+                (x < oldMatrix.ySize / 2 && y > oldMatrix.xSize / 2) -> 3
+                (x > oldMatrix.ySize / 2 && y > oldMatrix.xSize / 2) -> 4
                 else -> 5
             }
         }
@@ -92,7 +92,7 @@ class DaySolution14(private val logger: ILogger) : DaySolution {
         private var intRes: Int = 0
         private val robots = mutableListOf<Robot>()
 
-        private val matrix = Matrix(101, 103, ".")
+        private val oldMatrix = OldMatrix(101, 103, ".")
 
         override fun handleLine(inputStr: String, pos: Int) {
             val split = inputStr.split(" ")
@@ -145,7 +145,7 @@ class DaySolution14(private val logger: ILogger) : DaySolution {
         }
 
         private fun inLine(num: Int, robots: List<Robot>): Boolean {
-            for (i in 0..matrix.xSize - num) {
+            for (i in 0..oldMatrix.xSize - num) {
                 if (inLineFrom(i, num, robots)) return true
             }
             return false
@@ -162,26 +162,26 @@ class DaySolution14(private val logger: ILogger) : DaySolution {
 
         private fun singleMove(rob: Robot): Robot {
             var pos = rob.pos.plus(rob.vel)
-            if (!pos.inMatrix(matrix)) {
-                pos = Point2D((pos.x + matrix.ySize) % matrix.ySize, (pos.y + matrix.xSize) % matrix.xSize)
+            if (!pos.inMatrix(oldMatrix)) {
+                pos = Point2D((pos.x + oldMatrix.ySize) % oldMatrix.ySize, (pos.y + oldMatrix.xSize) % oldMatrix.xSize)
             }
 
             return Robot(pos = pos, vel = rob.vel)
         }
 
         fun toMatrix() {
-            val matrix1 = Matrix(matrix.ySize, matrix.xSize, ".")
+            val oldMatrix1 = OldMatrix(oldMatrix.ySize, oldMatrix.xSize, ".")
             robots
                 .map {
-                    if (matrix1.get(it.pos) == ".") {
-                        matrix1.put(it.pos, "1")
+                    if (oldMatrix1.get(it.pos) == ".") {
+                        oldMatrix1.put(it.pos, "1")
                     } else {
-                        val num = matrix1.get(it.pos).toInt()
-                        matrix1.put(it.pos, (num + 1).toString())
+                        val num = oldMatrix1.get(it.pos).toInt()
+                        oldMatrix1.put(it.pos, (num + 1).toString())
                     }
                     it
                 }
-            matrix1.printMirrow(logger = logger)
+            oldMatrix1.printMirrow(logger = logger)
         }
 
         override fun obtainResult(): String = intRes.toString()

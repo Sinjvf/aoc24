@@ -4,8 +4,8 @@ import com.example.ILogger
 import com.example.aoc24.util.Direction
 import com.example.aoc24.util.Graph
 import com.example.aoc24.util.GraphData
-import com.example.aoc24.util.Matrix
 import com.example.aoc24.util.NodesWithData
+import com.example.aoc24.util.OldMatrix
 import com.example.aoc24.util.Point2D
 import com.example.aoc24.util.allPath
 import com.example.aoc24.util.search
@@ -14,7 +14,7 @@ class DaySolution10(private val logger: ILogger) : DaySolution {
 
     override val part1 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private val matrix = Matrix<Int>()
+        private val oldMatrix = OldMatrix<Int>()
         private lateinit var graph: Graph10
         private val starts = mutableSetOf<Point2D>()
         private val ends = mutableSetOf<Point2D>()
@@ -22,13 +22,13 @@ class DaySolution10(private val logger: ILogger) : DaySolution {
         override fun handleLine(inputStr: String, pos: Int) {
             for (ch in inputStr) {
                 val value = ch.toString().toInt()
-                val newPoint = matrix.getNextPoint(pos)
+                val newPoint = oldMatrix.getNextPoint(pos)
 
                 if (value == 0) starts.add(newPoint)
                 if (value == 9) ends.add(newPoint)
-                matrix.addToEnd(pos, ch.toString().toInt())
+                oldMatrix.addToEnd(pos, ch.toString().toInt())
             }
-            graph = Graph10(matrix)
+            graph = Graph10(oldMatrix)
         }
 
         override fun finish() {
@@ -53,7 +53,7 @@ class DaySolution10(private val logger: ILogger) : DaySolution {
     }
     override val part2 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private val matrix = Matrix<Int>()
+        private val oldMatrix = OldMatrix<Int>()
         private lateinit var graph: Graph10
         private val starts = mutableSetOf<Point2D>()
         private val ends = mutableSetOf<Point2D>()
@@ -61,13 +61,13 @@ class DaySolution10(private val logger: ILogger) : DaySolution {
         override fun handleLine(inputStr: String, pos: Int) {
             for (ch in inputStr) {
                 val value = ch.toString().toInt()
-                val newPoint = matrix.getNextPoint(pos)
+                val newPoint = oldMatrix.getNextPoint(pos)
 
                 if (value == 0) starts.add(newPoint)
                 if (value == 9) ends.add(newPoint)
-                matrix.addToEnd(pos, ch.toString().toInt())
+                oldMatrix.addToEnd(pos, ch.toString().toInt())
             }
-            graph = Graph10(matrix)
+            graph = Graph10(oldMatrix)
         }
 
         override fun finish() {
@@ -88,15 +88,15 @@ class DaySolution10(private val logger: ILogger) : DaySolution {
     }
 
     data class Node(val value: Int, val point: Point2D)
-    class Graph10(val matrix: Matrix<Int>) : Graph<Node, IntGraphData> {
+    class Graph10(val oldMatrix: OldMatrix<Int>) : Graph<Node, IntGraphData> {
 
         override fun next(data: NodesWithData<Node, IntGraphData>): List<NodesWithData<Node, IntGraphData>> {
             return possibleDirPart1
-                .map { it to data.node.point.toDirection(it) }
-                .filter { it.second.inMatrix(matrix) }
-                .filter { matrix.get(it.second) - data.node.value == 1 }
+                .map { it to data.node.point.toOldDirection(it) }
+                .filter { it.second.inMatrix(oldMatrix) }
+                .filter { oldMatrix.get(it.second) - data.node.value == 1 }
                 .map {
-                    val newVal = matrix.get(it.second)
+                    val newVal = oldMatrix.get(it.second)
                     val nextNode = Node(newVal, it.second)
                     NodesWithData(data.node, nextNode, IntGraphData(newVal))
                 }

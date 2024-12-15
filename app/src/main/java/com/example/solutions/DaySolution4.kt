@@ -2,7 +2,7 @@ package com.example.solutions
 
 import com.example.ILogger
 import com.example.aoc24.util.Direction
-import com.example.aoc24.util.Matrix
+import com.example.aoc24.util.OldMatrix
 import com.example.aoc24.util.Point2D
 import com.example.aoc24.util.PositionData
 
@@ -10,7 +10,7 @@ class DaySolution4(private val logger: ILogger) : DaySolution {
 
     override val part1 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private val matrix = Matrix<Char>()
+        private val oldMatrix = OldMatrix<Char>()
 
         fun countInStr(inputStr: String, type: String = ""): Int {
             var copyStr = inputStr
@@ -32,7 +32,7 @@ class DaySolution4(private val logger: ILogger) : DaySolution {
         }
 
         override fun handleLine(inputStr: String, pos: Int) {
-            matrix.addRaw(pos, inputStr.toList())
+            oldMatrix.addRaw(pos, inputStr.toList())
             intRes += countInStr(inputStr, "row")
         }
 
@@ -40,15 +40,15 @@ class DaySolution4(private val logger: ILogger) : DaySolution {
             //get col
 
             println("----COLUMNS----")
-            for (i in 0 until matrix.xSize) {
-                val column = buildString { matrix.getCol(i).forEach { append(it) } }
+            for (i in 0 until oldMatrix.xSize) {
+                val column = buildString { oldMatrix.getCol(i).forEach { append(it) } }
 
                 intRes += countInStr(column, "column")
             }
 
 
             println("----DIAGONALS----")
-            matrix.onEachDiagonal {
+            oldMatrix.onEachDiagonal {
                 val diagonalStr = buildString { it.forEach { append(it) } }
                 intRes += countInStr(diagonalStr, "diagonal")
             }
@@ -58,15 +58,15 @@ class DaySolution4(private val logger: ILogger) : DaySolution {
     }
     override val part2 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private val matrix = Matrix<Char>()
+        private val oldMatrix = OldMatrix<Char>()
 
         override fun handleLine(inputStr: String, pos: Int) {
-            matrix.addRaw(pos, inputStr.toList())
+            oldMatrix.addRaw(pos, inputStr.toList())
         }
 
         override fun finish() {
 
-            val iterator = matrix.iterator()
+            val iterator = oldMatrix.iterator()
             while (iterator.hasNext()) {
                 val next = iterator.next()
                 if (next.data=='A' && checkXmas(next)) {
@@ -81,11 +81,11 @@ class DaySolution4(private val logger: ILogger) : DaySolution {
             val set1 = mutableSetOf<Char>()
             val set2 = mutableSetOf<Char>()
 
-            addtoSet(positionData.pos.toDirection(Direction.UP).toDirection(Direction.LEFT), set1)
-            addtoSet(positionData.pos.toDirection(Direction.DOWN).toDirection(Direction.RIGHT), set1)
+            addtoSet(positionData.pos.toOldDirection(Direction.UP).toOldDirection(Direction.LEFT), set1)
+            addtoSet(positionData.pos.toOldDirection(Direction.DOWN).toOldDirection(Direction.RIGHT), set1)
 
-            addtoSet(positionData.pos.toDirection(Direction.DOWN).toDirection(Direction.LEFT), set2)
-            addtoSet(positionData.pos.toDirection(Direction.UP).toDirection(Direction.RIGHT), set2)
+            addtoSet(positionData.pos.toOldDirection(Direction.DOWN).toOldDirection(Direction.LEFT), set2)
+            addtoSet(positionData.pos.toOldDirection(Direction.UP).toOldDirection(Direction.RIGHT), set2)
             return checkSet(set1) && checkSet(set2)
         }
 
@@ -93,8 +93,8 @@ class DaySolution4(private val logger: ILogger) : DaySolution {
             set.size == 2 && set.contains('M') && set.contains('S')
 
         private fun addtoSet(p: Point2D, set: MutableSet<Char>) {
-            if (matrix.pointInRange(p)) {
-                set.add(matrix.get(p))
+            if (oldMatrix.pointInRange(p)) {
+                set.add(oldMatrix.get(p))
             }
         }
 

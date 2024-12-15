@@ -1,14 +1,14 @@
 package com.example.solutions
 
 import com.example.ILogger
-import com.example.aoc24.util.Matrix
+import com.example.aoc24.util.OldMatrix
 import com.example.aoc24.util.Point2D
 
 class DaySolution8(private val logger: ILogger) : DaySolution {
 
     override val part1 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private var matrix = Matrix<Place>()
+        private var oldMatrix = OldMatrix<Place>()
         private val map = mutableMapOf<Char, MutableList<Pair<Place.Antn, Point2D>>>()
         private val set = mutableSetOf<Point2D>()
 
@@ -18,10 +18,10 @@ class DaySolution8(private val logger: ILogger) : DaySolution {
                 val current = ch.toPlace()
                 if (current is Place.Antn) {
                     val set = map.getOrPut(ch) { mutableListOf() }
-                    set.add(current to matrix.getNextPoint(pos))
+                    set.add(current to oldMatrix.getNextPoint(pos))
                 }
 
-                matrix.addToEnd(pos, current)
+                oldMatrix.addToEnd(pos, current)
             }
         }
 
@@ -32,17 +32,17 @@ class DaySolution8(private val logger: ILogger) : DaySolution {
                     val current = pair.second
                     for (i in id + 1 until list.size) {
                         val next = list[i].second
-                        val vectors = current.vectorTo(next)
+                        val vectors = current.oldVectorTo(next)
 
-                        val antinod1 = next.toDirections(vectors)
-                        if (matrix.pointInRange(antinod1)) {
+                        val antinod1 = next.toOldDirections(vectors)
+                        if (oldMatrix.pointInRange(antinod1)) {
                             set.add(antinod1)
-                            matrix.put(antinod1, Place.Antn('#'))
+                            oldMatrix.put(antinod1, Place.Antn('#'))
                         }
-                        val antinod2 = current.toDirections(vectors.map { it.first to it.second.opposite })
-                        if (matrix.pointInRange(antinod2)) {
+                        val antinod2 = current.toOldDirections(vectors.map { it.first to it.second.opposite })
+                        if (oldMatrix.pointInRange(antinod2)) {
                             set.add(antinod2)
-                            matrix.put(antinod2, Place.Antn('#'))
+                            oldMatrix.put(antinod2, Place.Antn('#'))
                         }
                     }
                 }
@@ -55,7 +55,7 @@ class DaySolution8(private val logger: ILogger) : DaySolution {
     }
     override val part2 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private var matrix = Matrix<Place>()
+        private var oldMatrix = OldMatrix<Place>()
         private val map = mutableMapOf<Char, MutableList<Pair<Place.Antn, Point2D>>>()
         private val set = mutableSetOf<Point2D>()
 
@@ -65,10 +65,10 @@ class DaySolution8(private val logger: ILogger) : DaySolution {
                 val current = ch.toPlace()
                 if (current is Place.Antn) {
                     val set = map.getOrPut(ch) { mutableListOf() }
-                    set.add(current to matrix.getNextPoint(pos))
+                    set.add(current to oldMatrix.getNextPoint(pos))
                 }
 
-                matrix.addToEnd(pos, current)
+                oldMatrix.addToEnd(pos, current)
             }
         }
 
@@ -78,34 +78,34 @@ class DaySolution8(private val logger: ILogger) : DaySolution {
                     val current = pair.second
                     for (i in id + 1 until list.size) {
                         val added = list[i].second
-                        val vectors = current.vectorTo(added)
+                        val vectors = current.oldVectorTo(added)
 
 
 
                         var antinod1 = added
-                        while (matrix.pointInRange(antinod1)){
+                        while (oldMatrix.pointInRange(antinod1)){
 
-                            if (matrix.pointInRange(antinod1)) {
+                            if (oldMatrix.pointInRange(antinod1)) {
                                 set.add(antinod1)
-                                matrix.put(antinod1, Place.Antn('#'))
+                                oldMatrix.put(antinod1, Place.Antn('#'))
                             }
-                            antinod1 = antinod1.toDirections(vectors)
+                            antinod1 = antinod1.toOldDirections(vectors)
                         }
 
 
 
                         var antinod2 = current
-                        while (matrix.pointInRange(antinod2)){
-                            if (matrix.pointInRange(antinod2)) {
+                        while (oldMatrix.pointInRange(antinod2)){
+                            if (oldMatrix.pointInRange(antinod2)) {
                                 set.add(antinod2)
-                                matrix.put(antinod2, Place.Antn('#'))
+                                oldMatrix.put(antinod2, Place.Antn('#'))
                             }
-                            antinod2 = antinod2.toDirections(vectors.map { it.first to it.second.opposite })
+                            antinod2 = antinod2.toOldDirections(vectors.map { it.first to it.second.opposite })
                         }
                     }
                 }
             }
-            matrix.print(logger, "")
+            oldMatrix.print(logger, "")
             intRes = set.size
         }
         override fun obtainResult(): String = intRes.toString()

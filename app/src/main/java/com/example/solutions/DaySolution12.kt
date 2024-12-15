@@ -4,8 +4,8 @@ import com.example.ILogger
 import com.example.aoc24.util.Direction
 import com.example.aoc24.util.Graph
 import com.example.aoc24.util.GraphData
-import com.example.aoc24.util.Matrix
 import com.example.aoc24.util.NodesWithData
+import com.example.aoc24.util.OldMatrix
 import com.example.aoc24.util.Point2D
 import com.example.aoc24.util.getDirs
 import com.example.aoc24.util.opposite
@@ -15,18 +15,18 @@ class DaySolution12(private val logger: ILogger) : DaySolution {
 
     override val part1 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private val matrix = Matrix<Char>()
-        private val graph = Graph12(matrix)
+        private val oldMatrix = OldMatrix<Char>()
+        private val graph = Graph12(oldMatrix)
         private val visited = mutableSetOf<Point2D>()
 
         override fun handleLine(inputStr: String, pos: Int) {
             for (ch in inputStr) {
-                matrix.addToEnd(pos, ch)
+                oldMatrix.addToEnd(pos, ch)
             }
         }
 
         override fun finish() {
-            val iterator = matrix.iterator()
+            val iterator = oldMatrix.iterator()
             while (iterator.hasNext()) {
                 val next = iterator.next()
 
@@ -54,19 +54,19 @@ class DaySolution12(private val logger: ILogger) : DaySolution {
     }
     override val part2 = object : DaySolutionPart {
         private var intRes: Int = 0
-        private val matrix = Matrix<Char>()
-        private val graph = Graph12(matrix)
+        private val oldMatrix = OldMatrix<Char>()
+        private val graph = Graph12(oldMatrix)
         private val areas = mutableListOf<Set<Point2D>>()
         private val visited = mutableSetOf<Point2D>()
 
         override fun handleLine(inputStr: String, pos: Int) {
             for (ch in inputStr) {
-                matrix.addToEnd(pos, ch)
+                oldMatrix.addToEnd(pos, ch)
             }
         }
 
         override fun finish() {
-            val iterator = matrix.iterator()
+            val iterator = oldMatrix.iterator()
             while (iterator.hasNext()) {
                 val next = iterator.next()
 
@@ -111,15 +111,15 @@ class DaySolution12(private val logger: ILogger) : DaySolution {
     }
 
     data class Node(val point: Point2D)
-    class Graph12(val matrix: Matrix<Char>) : Graph<Node, IntGraphData> {
+    class Graph12(val oldMatrix: OldMatrix<Char>) : Graph<Node, IntGraphData> {
 
         override fun next(data: NodesWithData<Node, IntGraphData>): List<NodesWithData<Node, IntGraphData>> {
             return possibleDir
-                .map { it to data.node.point.toDirection(it) }
-                .filter { it.second.inMatrix(matrix) }
-                .filter { matrix.get(it.second) == matrix.get(data.node.point) }
+                .map { it to data.node.point.toOldDirection(it) }
+                .filter { it.second.inMatrix(oldMatrix) }
+                .filter { oldMatrix.get(it.second) == oldMatrix.get(data.node.point) }
                 .map {
-                    val newNode = matrix.get(it.second)
+                    val newNode = oldMatrix.get(it.second)
                     val newVal = getNeighbords1(it.second)
                     val nextNode = Node(it.second)
                     NodesWithData(data.node, nextNode, IntGraphData(newVal))
@@ -127,11 +127,11 @@ class DaySolution12(private val logger: ILogger) : DaySolution {
         }
 
         fun getNeighbords1(pos: Point2D) = possibleDir
-            .map { it to pos.toDirection(it) }
+            .map { it to pos.toOldDirection(it) }
             //   .filter { }
             .filter {
-                !it.second.inMatrix(matrix)
-                    || matrix.get(it.second) != matrix.get(pos)
+                !it.second.inMatrix(oldMatrix)
+                    || oldMatrix.get(it.second) != oldMatrix.get(pos)
             }
 
             .size
@@ -144,7 +144,7 @@ class DaySolution12(private val logger: ILogger) : DaySolution {
         Graph<Point2D, IntGraphData> {
         override fun next(data: NodesWithData<Point2D, IntGraphData>): List<NodesWithData<Point2D, IntGraphData>> {
             return direction.orientation.opposite().getDirs()
-                .map { it to data.node.toDirection(it) }
+                .map { it to data.node.toOldDirection(it) }
                 .filter { area.contains(it.second) }
                 .filter { getFenceDir(it.second, area).contains(direction) }
                 .map {
@@ -171,7 +171,7 @@ class DaySolution12(private val logger: ILogger) : DaySolution {
 
 fun getFenceDir(pos: Point2D, area: List<Point2D>) =
     mutableSetOf(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT)
-        .map { it to pos.toDirection(it) }
+        .map { it to pos.toOldDirection(it) }
         .filter {
             !area.contains(it.second)
         }

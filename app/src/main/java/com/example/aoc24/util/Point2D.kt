@@ -21,7 +21,8 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
 
     fun plus(a: Point2D) = Point2D(x + a.x, y + a.y)
 
-    fun toDirection(direction: Direction, size: Int = 1): Point2D =
+    @Deprecated("основан на старом расположении матрицы. не интуитивен. использовать только со старыми матрицами")
+    fun toOldDirection(direction: Direction, size: Int = 1): Point2D =
         when (direction) {
             UP -> Point2D(x - size, y)
             DOWN -> Point2D(x + size, y)
@@ -29,18 +30,27 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
             RIGHT -> Point2D(x, y + size)
         }
 
-    fun toDirections(list: List<Pair<Int, Direction>>): Point2D =
-        list.fold(this@Point2D) { point, dir -> point.toDirection(dir.second, dir.first) }
+    fun toDirection(direction: Direction, size: Int = 1): Point2D =
+        when (direction) {
+            UP -> Point2D(x, y - size)
+            DOWN -> Point2D(x, y + size)
+            LEFT -> Point2D(x - size, y)
+            RIGHT -> Point2D(x + size, y)
+        }
 
+    fun toOldDirections(list: List<Pair<Int, Direction>>): Point2D =
+        list.fold(this@Point2D) { point, dir -> point.toOldDirection(dir.second, dir.first) }
 
-    fun <T> inMatrix(matrix: Matrix<T>): Boolean =
-        (x in 0 until matrix.ySize) && (y in 0 until matrix.xSize)
+    fun <T> inMatrix(oldMatrix: OldMatrix<T>): Boolean =
+        (x in 0 until oldMatrix.ySize) && (y in 0 until oldMatrix.xSize)
 
-    fun <T> inExpandMatrix(matrix: Matrix<T>, expandDir: List<Direction>): Boolean =
+    fun <T> inMatrix(matrix: Matrix<T>): Boolean = matrix.pointInRange(this)
+
+    fun <T> inExpandMatrix(oldMatrix: OldMatrix<T>, expandDir: List<Direction>): Boolean =
         !((UP !in expandDir) && (x < 0)
-            || (DOWN !in expandDir) && (x >= matrix.ySize)
+            || (DOWN !in expandDir) && (x >= oldMatrix.ySize)
             || (LEFT !in expandDir) && (y < 0)
-            || (RIGHT !in expandDir) && (y >= matrix.xSize))
+            || (RIGHT !in expandDir) && (y >= oldMatrix.xSize))
 
     fun inRange(xR: IntRange, yR: IntRange) =
         x in xR && y in yR
@@ -50,13 +60,23 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
     fun distanceTo(p:Point2D):Int =
         abs(p.x-x) +abs(p.y-y)
 
-    fun vectorTo(p: Point2D):List< Pair< Int,Direction>> {
+    @Deprecated("основан на старом расположении матрицы. не интуитивен. использовать только со старыми матрицами")
+    fun oldVectorTo(p: Point2D): List<Pair<Int, Direction>> {
         val list = mutableListOf<Pair< Int,Direction>>()
         val xDiff = p.x - x
         val yDiff = p.y - y
         if (xDiff> 0) list.add(abs(xDiff) to DOWN) else if (xDiff<0) list.add(abs(xDiff)  to UP)
         if (yDiff > 0) list.add(abs(yDiff) to RIGHT) else if (yDiff<0) list.add(abs(yDiff) to LEFT)
    //     println(list)
+        return list
+    }
+
+    fun vectorTo(p: Point2D): List<Pair<Int, Direction>> {
+        val list = mutableListOf<Pair<Int, Direction>>()
+        val xDiff = p.x - x
+        val yDiff = p.y - y
+        if (xDiff > 0) list.add(abs(xDiff) to RIGHT) else if (xDiff < 0) list.add(abs(xDiff) to LEFT)
+        if (yDiff > 0) list.add(abs(yDiff) to UP) else if (yDiff < 0) list.add(abs(yDiff) to DOWN)
         return list
     }
 }
