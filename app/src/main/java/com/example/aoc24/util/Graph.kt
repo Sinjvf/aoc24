@@ -70,6 +70,13 @@ data class SearchPath<Node, Data : GraphData>(
 ) : List<Node> by path
 
 fun <Node, Data : GraphData> SearchResult<Node, Data>.pathTo(node: Node): SearchPath<Node, Data>? {
+    val reversed = reversedPathTo(node)
+    val cost = reversed?.cost ?: return null
+    val path = reversed.path.asReversed()
+    return SearchPath(path, cost)
+}
+
+fun <Node, Data : GraphData> SearchResult<Node, Data>.reversedPathTo(node: Node): SearchPath<Node, Data>? {
     val cost = searchTree[node]?.second ?: return null
     val path = buildList {
         var current = node
@@ -79,9 +86,10 @@ fun <Node, Data : GraphData> SearchResult<Node, Data>.pathTo(node: Node): Search
             if (previous == current) break
             current = previous
         }
-    }.asReversed()
+    }
     return SearchPath(path, cost)
 }
+
 
 fun <Node, Data : GraphData> SearchResult<Node, Data>.path(): SearchPath<Node, Data>? =
     when (destination) {
