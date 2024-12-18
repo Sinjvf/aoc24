@@ -8,7 +8,18 @@ class Matrix<T>() : Iterable<PositionData<T>> {
     constructor(x: Int, y: Int, space: T) : this() {
         for (i in 0 until x) {
             for (j in 0 until y) {
-                data.put(Point2D(x, y), space)
+                data.put(Point2D(i, j), space)
+            }
+        }
+        xSize = x
+        ySize = y
+    }
+
+    constructor(x: Int, y: Int, space: (Point2D)->T) : this() {
+        for (i in 0 until x) {
+            for (j in 0 until y) {
+                data.put(Point2D(i, j), space(Point2D(i, j)))
+
             }
         }
         xSize = x
