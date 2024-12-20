@@ -5,6 +5,14 @@ import com.example.ILogger
 class Matrix<T>() : Iterable<PositionData<T>> {
     private val data = mutableMapOf<Point2D, T>()
 
+    fun copy(): Matrix<T>{
+        val newM =  Matrix<T>()
+        newM.data.putAll(data)
+        newM.ySize = ySize
+        newM.xSize = xSize
+        return newM
+    }
+
     constructor(x: Int, y: Int, space: T) : this() {
         for (i in 0 until x) {
             for (j in 0 until y) {

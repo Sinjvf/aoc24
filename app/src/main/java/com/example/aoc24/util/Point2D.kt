@@ -38,6 +38,34 @@ data class Point2D(var x: Int, var y: Int) : Comparable<Point2D> {
             RIGHT -> Point2D(x + size, y)
         }
 
+    val allDirection = listOf(UP, DOWN, LEFT, RIGHT)
+    fun getNei(matrix: Matrix<*>) =
+        allDirection.map { this.toDirection(it) }.filter { it.inMatrix(matrix) }
+
+    fun getDistansedNei(matrix: Matrix<*>, dist: Int): Set<Point2D> = buildSet {
+        /* if (dist==0){
+             Unit
+         }else if (dist==1){
+             val nei = getNei(matrix)
+             addAll(nei)
+         } else {
+             val nei = getNei(matrix)
+             addAll(nei)
+             nei.forEach {
+                 addAll(it.getDistansedNei(matrix, dist-1), )
+             }
+         }*/
+        for (i in x - dist..x + dist) {
+            for (j in y - dist..y + dist) {
+
+                val newP = Point2D(i, j)
+                if (!newP.inMatrix(matrix)) continue
+                if (this@Point2D.distanceTo(Point2D(i, j)) > dist) continue
+                add(newP)
+            }
+        }
+    }
+
     fun toOldDirections(list: List<Pair<Int, Direction>>): Point2D =
         list.fold(this@Point2D) { point, dir -> point.toOldDirection(dir.second, dir.first) }
 
