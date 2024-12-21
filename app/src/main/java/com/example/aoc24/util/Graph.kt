@@ -9,7 +9,9 @@ import java.util.PriorityQueue
 interface Graph<Node, Data : GraphData> {
     fun next(data: NodesWithData<Node, Data>): List<NodesWithData<Node, Data>>
 
-    fun nextExcept(data: NodesWithData<Node, Data>, except:List<List<Node>>): List<NodesWithData<Node, Data>> = next(data)
+    fun nextExclude(data: NodesWithData<Node, Data>, exclude: Set<Node>): List<NodesWithData<Node, Data>> =
+        next(data)
+            .filter { it.node !in exclude }
 }
 
 
@@ -25,7 +27,8 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
     onVisited: (NodesWithData<Node, Data>) -> Unit = { _ -> },
     heuristic: (NodesWithData<Node, Data>)  -> Data? = { null },
     isFFFinish: (NodesWithData<Node, Data>, Map<Node, Pair<Node, Data>>, PriorityQueue<NodesWithData<Node, Data>>) -> Boolean = { _, _, _ -> false },
-    clear:(Node)->Unit = {}
+    clear: (Node) -> Unit = {},
+    nextF: ((data: NodesWithData<Node, Data>) -> List<NodesWithData<Node, Data>>)? = null
 ): SearchResult<Node, Data> {
     val queue = PriorityQueue(compareBy<NodesWithData<Node, Data>> { it.data.getLong() })
     queue.add(NodesWithData(null, startNode, startData))
@@ -40,8 +43,9 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
             currData.node,
             searchTree
         )
-
-        next(currData)
+val nexts = nextF?.invoke(currData) ?: next(currData)
+//println( "     current ${currData.node}, next =${nexts.map{it.node}}")
+        nexts
             .filter { it.node !in searchTree }
             .forEach { nextData ->
                 val newData = currData.data.plus(nextData.data) as Data
@@ -61,6 +65,58 @@ fun <Node, Data : GraphData> Graph<Node, Data>.search(
                     searchTree[nextData.node] = currData.node.apply { clear(this) } to newData
                 }
             }
+    }
+}
+
+fun <Node, Data : GraphData> Graph<Node, Data>.findAll(
+    startNode: Node,
+    startData: Data,
+    end: Node,
+): List<SearchResult<Node, Data>>  = buildList{
+    val search1Res = search(
+        startNode = startNode,
+        startData = startData,
+        isFinish = { nodesWithData -> nodesWithData.node == end },
+    )
+    val search1 = search1Res.reversedPathTo(end)
+    val cost = search1?.cost?.getLong()?:return emptyList()
+
+    val path = search1.path
+    add(search1Res)
+
+  //  println("findAll path = $path")
+    path.forEach {
+        addAll(findAnother(startNode, startData, end, search1.cost.getLong(), setOf(it)))
+    }
+}
+
+fun <Node, Data : GraphData> Graph<Node, Data>.findAnother(
+    startNode: Node,
+    startData: Data,
+    end: Node,
+    cost: Long,
+    exclude: Set<Node>
+): List<SearchResult<Node, Data>> {
+    if (exclude.contains(startNode) || exclude.contains(end)) return emptyList()
+
+    val itSearchRes = search(
+        startNode = startNode,
+        startData = startData,
+        isFinish = { nodesWithData -> nodesWithData.node == end },
+        nextF = {nextExclude(it, exclude)}
+    )
+    val itSearch = itSearchRes.reversedPathTo(end)
+    return buildList {
+     //   println("findAnother exclude= $exclude  = $itSearch")
+        if (itSearch?.cost?.getLong() == cost) {
+            add(itSearchRes)
+           /// println("findAnother exclude= $exclude  = $itSearchRes")
+            itSearch.path.forEach {
+                addAll(
+                    findAnother(startNode, startData, end, cost, buildSet { addAll(exclude);add(it) })
+                )
+            }
+        }
     }
 }
 

@@ -71,6 +71,13 @@ class Matrix<T>() : Iterable<PositionData<T>> {
         if (!pointInRange(point)) throw IllegalArgumentException("bad point $point")
         data.put(point, node)
     }
+    fun add(point: Point2D, node: T) {
+        data.put(point, node)
+    }
+    fun remove(point: Point2D) {
+        if (!pointInRange(point)) throw IllegalArgumentException("bad point $point")
+        data.remove(point)
+    }
 
     fun put(x: Int, y: Int, node: T) {
         val point = Point2D(x, y)
@@ -79,7 +86,7 @@ class Matrix<T>() : Iterable<PositionData<T>> {
     }
 
     fun pointInRange(point: Point2D): Boolean =
-        point.x in 0 until xSize && point.y in 0 until ySize
+        data.get(point)!=null
 
     override fun iterator(): Iterator<PositionData<T>> = iterator {
         data.forEach {
@@ -95,7 +102,8 @@ class Matrix<T>() : Iterable<PositionData<T>> {
             val builder = StringBuilder()
             for (x in 0 until xSize) {
                 val point =  Point2D(x, y)
-                builder.append((printString?.invoke(get(point),point)) ?: get(point).toString())
+                val pointS = data[point]?:" "
+                builder.append((printString?.invoke(get(point),point)) ?: pointS.toString())
                     .append(separator)
             }
             logger?.logD(builder.toString()) ?: println(builder.toString())
