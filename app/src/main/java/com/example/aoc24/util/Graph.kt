@@ -19,6 +19,62 @@ interface GraphData {
     fun plus(a: GraphData): GraphData
     fun getLong(): Long
 }
+fun <Node, Data : GraphData> Graph<Node, Data>.searchLoop(
+    startNode: Node,
+    startData: Data,
+    nextF: ((data: NodesWithData<Node, Data>) -> List<NodesWithData<Node, Data>>)? = null
+): List<List<Pair<Node, Node>>> {
+
+    val visitedR= mutableListOf<Pair<Node, Node>>()
+
+    return searchLoop_(startNode, startData, startNode, visitedR)
+}
+
+private fun <Node, Data : GraphData> Graph<Node, Data>.searchLoop_(
+    startNode: Node,
+    startData: Data,
+    endNode: Node,
+    visitedR: List<Pair<Node, Node>> ,
+    nextF: ((data: NodesWithData<Node, Data>) -> List<NodesWithData<Node, Data>>)? = null
+): List<List<Pair<Node, Node>>> {
+
+    val currData = NodesWithData(
+        null,
+        startNode,
+        startData,
+    )
+
+    //TODO
+    if (visitedR.size >3) return emptyList()
+
+    if (currData.node == endNode && visitedR.isNotEmpty()) {
+        return listOf(visitedR)
+    }
+    val nexts = nextF?.invoke(currData) ?: next(currData).filter {
+        !visitedR.contains(it.node to currData.node) && !visitedR.contains(currData.node to it.node)
+    }
+    if (nexts.isEmpty())return listOf(visitedR)
+   // println("${nexts.size}   ${visitedR.size}")
+    val res =  mutableListOf<List<Pair<Node, Node>>>()
+
+
+    nexts.forEach { nextData ->
+//println("visit ${currData.node to nextData.node} $visitedR")
+        val newData = currData.data.plus(nextData.data) as Data
+      //  visitedR.add(currData.node to nextData.node)
+        val ppp = searchLoop_(
+            nextData.node,
+            newData,
+            endNode,
+            buildList{addAll(visitedR); add(currData.node to nextData.node)}
+            )
+        if (ppp.isNotEmpty()) {
+            res.addAll(ppp)
+        }
+    }
+
+    return res
+}
 
 fun <Node, Data : GraphData> Graph<Node, Data>.search(
     startNode: Node,
