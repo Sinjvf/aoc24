@@ -117,7 +117,7 @@ class Matrix<T>() : Iterable<PositionData<T>> {
     }
 
     fun getRaw(y:Int):List<T> = buildList {
-        for (i in 0 until ySize) {
+        for (i in 0 until xSize) {
             add(get(Point2D(i, y)))
         }
     }
